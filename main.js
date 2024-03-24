@@ -15,37 +15,46 @@ let penSize = 5;
 let undoStack = [];
 let redoStack = [];
 
-canvas.width = window.innerWidth * 0.8;
-canvas.height = window.innerHeight * 0.8;
+canvas.width = 800; // Set canvas width
+canvas.height = 500; // Set canvas height
 
 ctx.lineWidth = penSize;
 ctx.lineJoin = 'round';
 ctx.lineCap = 'round';
 
+let isDraggingSticker = false;
+
 function startDrawing(e) {
-  isDrawing = true;
-  draw(e);
+  if (!isDraggingSticker) {
+    isDrawing = true;
+    draw(e);
+  }
 }
 
 function stopDrawing() {
-  isDrawing = false;
-  ctx.beginPath();
-  saveState();
+  if (!isDraggingSticker) {
+    isDrawing = false;
+    ctx.beginPath();
+    saveState();
+  }
 }
 
 function draw(e) {
-  if (!isDrawing && !isErasing) return;
+  if ((!isDrawing && !isErasing) || isDraggingSticker) return;
 
-  if (isErasing) {
+  if (isErasing && e.buttons === 1) { // Check if left mouse button is pressed
     ctx.strokeStyle = '#ffffff'; // Set eraser color to match canvas background
-  } else {
+    ctx.lineWidth = penSize;
+    ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    ctx.stroke();
+  } else if (isDrawing && e.buttons === 1) { // Check if left mouse button is pressed
     ctx.strokeStyle = currentColor;
+    ctx.lineWidth = penSize;
+    ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    ctx.stroke();
   }
-
-  ctx.lineWidth = penSize;
-  ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-  ctx.stroke();
 }
+
 
 function toggleEraser() {
   isErasing = !isErasing;
@@ -95,8 +104,26 @@ function saveImage() {
   const link = document.createElement('a');
   link.href = image;
   link.download = 'drawing.png';
+  
+  // Create a file save dialog
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    const fileName = prompt('Enter file name', 'drawing.png');
+    if (fileName) {
+      link.download = fileName;
+      const a = document.createElement('a');
+      a.href = link.href;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  });
+
+  // Open the file save dialog
   link.click();
 }
+
 
 // Event Listeners
 canvas.addEventListener('mousedown', startDrawing);
@@ -115,3 +142,39 @@ undoButton.addEventListener('click', undo);
 redoButton.addEventListener('click', redo);
 clearButton.addEventListener('click', clearCanvas);
 saveButton.addEventListener('click', saveImage);
+
+const stickers = document.querySelectorAll('.sticker');
+
+stickers.forEach(sticker => {
+  sticker.addEventListener('dragstart', handleDragStart);
+});
+
+canvas.addEventListener('dragover', handleDragOver);
+canvas.addEventListener('drop', handleDrop);
+
+function handleDragStart(e) {
+  isDraggingSticker = true;
+  e.dataTransfer.setData('text/plain', e.target.src);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  isDraggingSticker = false;
+  const rect = canvas.getBoundingClientRect();
+  const offsetX = e.clientX - rect.left;
+  const offsetY = e.clientY - rect.top;
+
+  const imgSrc = e.dataTransfer.getData('text/plain');
+  const img = new Image();
+  img.src = imgSrc;
+
+  img.onload = function() {
+    // Draw the image with a width and height of 50px
+    ctx.drawImage(img, offsetX - 25, offsetY - 25, 50, 50);
+  };
+}
+
