@@ -9,21 +9,29 @@
     <title>canvas experiment</title>
   </head>
   <body>
-    <h1>draw something</h1>
-      <div class="container_canvas_colors">
+    <h1>Draw Something</h1>
+    <div class="container_canvas_colors">
         <canvas id="canvas"></canvas>
+
+        <div id="color_controls"></div>
         <div id="colorPicker" class="color-picker">
-          <div class="color-swatch" style="background-color: #ffffff;"></div>
-          <div class="color-swatch" style="background-color: #000000;"></div>
-          <div class="color-swatch" style="background-color: #634b33;"></div>
-          <div class="color-swatch" style="background-color: #b73535;"></div>
-          <div class="color-swatch" style="background-color: #bd7124;"></div>
-          <div class="color-swatch" style="background-color: #eae550;"></div>
-          <div class="color-swatch" style="background-color: #cd69a1;"></div>
-          <div class="color-swatch" style="background-color: #9555c5;"></div>
-          <div class="color-swatch" style="background-color: #539dc3;"></div>
-          <div class="color-swatch" style="background-color: #5fa147;"></div>
+            <div class="color-swatch" style="background-color: #ffffff;"></div>
+            <div class="color-swatch" style="background-color: #000000;"></div>
+            <div class="color-swatch" style="background-color: #634b33;"></div>
+            <div class="color-swatch" style="background-color: #b73535;"></div>
+            <div class="color-swatch" style="background-color: #bd7124;"></div>
+            <div class="color-swatch" style="background-color: #eae550;"></div>
+            <div class="color-swatch" style="background-color: #cd69a1;"></div>
+            <div class="color-swatch" style="background-color: #9555c5;"></div>
+            <div class="color-swatch" style="background-color: #539dc3;"></div>
+            <div class="color-swatch" style="background-color: #5fa147;"></div>
         </div>
-      </div>
+        <input type="range" id="penSize" min="1" max="20" value="5">
+        <button id="eraserButton">Eraser</button>
+        <button id="clearButton">Clear</button>
+        <button id="saveButton">Save as Image</button>
+        <button id="undoButton">Undo</button>
+        <button id="redoButton">Redo</button>
+    </div>
   </body>
 </html>
